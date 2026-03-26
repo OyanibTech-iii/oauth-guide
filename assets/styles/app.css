@@ -1,0 +1,49 @@
+body {
+    background-color: skyblue;
+}
+/* Container for alignment */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+/* The Button */
+.btn-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px; /* Optional: prevents it from getting too wide */
+    padding: 10px 16px;
+    
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    
+    color: #3c4043; /* Standard Google Text Color */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+/* Hover & Active states */
+.btn-google:hover {
+    background-color: #f8f9fa;
+    border-color: #c6c6c6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-google:active {
+    background-color: #eeeeee;
+}
+
+/* Icon Spacing */
+.icon-left {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
