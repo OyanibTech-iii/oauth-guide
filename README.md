@@ -19,6 +19,8 @@ Client secret
 -----------------------------------------------------------------
 
 .env line 16
+```bash
+
 MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=Oauth
 MYSQL_USER=googleuser
@@ -30,6 +32,8 @@ MYSQL_PORT=${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}
 PMA_HOST=mysql
 PMA_USER=googleuser
 PMA_PASSWORD=googlepass
+```
+
 -----------------------------------------------------------------
 ```bash
 
@@ -42,7 +46,7 @@ knpu_oauth2_client:
       # This 'route' must generate the URI you put in Google Console
       redirect_route: connect_google_check
       redirect_params: {}
-      ```
+ ```
 
 ------------------------------------------------------------------
 security.yaml
@@ -116,6 +120,8 @@ class UserChecker implements UserCheckerInterface
 
 ------------------------------------------------------------------
 mysql/bypass 
+```bash
+
 -- Create the user if it doesn't exist for that specific IP range
 CREATE USER IF NOT EXISTS 'googleuser'@'%' IDENTIFIED BY 'your_password_here';
 
@@ -124,6 +130,8 @@ GRANT ALL PRIVILEGES ON your_database_name.* TO 'googleuser'@'%';
 
 -- Refresh the privileges
 FLUSH PRIVILEGES;
+```
+
 ------------------------------------------------------------------
 clear git commit
 ```bash
