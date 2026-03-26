@@ -1,14 +1,24 @@
 
-```bash
-
+URI's 
 http://127.0.0.1:8000
 http://127.0.0.1:8000/connect/google/check
+```bash
+
 -----------------------------------------------------------------
 composer require knpuniversity/oauth2-client-bundle
 composer require league/oauth2-google
 composer require symfonycasts/verify-email-bundle
-
 -----------------------------------------------------------------
+```
+
+configure your account on https://console.cloud.google.com/auth/clients
+
+CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+Client ID
+Client secret
+-----------------------------------------------------------------
+
+.env line 16
 MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=Oauth
 MYSQL_USER=googleuser
@@ -21,6 +31,8 @@ PMA_HOST=mysql
 PMA_USER=googleuser
 PMA_PASSWORD=googlepass
 -----------------------------------------------------------------
+```bash
+
 knpu_oauth2_client:
   clients:
     google:
@@ -30,14 +42,21 @@ knpu_oauth2_client:
       # This 'route' must generate the URI you put in Google Console
       redirect_route: connect_google_check
       redirect_params: {}
+      ```
+
 ------------------------------------------------------------------
 security.yaml
+```bash
+
             custom_authenticators:
               - App\Security\LoginFormAuthenticator
               - App\Security\GoogleAuthenticator
             user_checker: App\Security\UserChecker
+```
 
 ------------------------------------------------------------------
+```bash
+
 security/UserChecker.php
 <?php
 
@@ -81,14 +100,19 @@ class UserChecker implements UserCheckerInterface
         // You can leave it empty or add additional checks here.
     }
 }
+```
+
 ------------------------------------------------------------------
   templates/login
+  ```bash
+
   <div class="auth-wrapper">
         <a href="{{ path('connect_google_start') }}" id="google-login-link" class="btn-google">
             <ion-icon name="logo-google" class="icon-left"></ion-icon>
             Continue with Google
         </a>
     </div>
+```
 
 ------------------------------------------------------------------
 mysql/bypass 
@@ -102,6 +126,8 @@ GRANT ALL PRIVILEGES ON your_database_name.* TO 'googleuser'@'%';
 FLUSH PRIVILEGES;
 ------------------------------------------------------------------
 clear git commit
+```bash
+
 git reset --soft HEAD~1
 
 ```
