@@ -122,6 +122,9 @@ class UserChecker implements UserCheckerInterface
 mysql/bypass 
 ```bash
 
+docker ps
+docker exec -it put_here_your_dockercontainer mysql -u root -p
+
 -- Create the user if it doesn't exist for that specific IP range
 CREATE USER IF NOT EXISTS 'googleuser'@'%' IDENTIFIED BY 'your_password_here';
 
