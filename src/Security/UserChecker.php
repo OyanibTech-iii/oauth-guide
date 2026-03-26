@@ -2,42 +2,44 @@
 
 namespace App\Security;
 
-use App\Entity\User;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use App\Entity\User as AppUser;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+
 
 class UserChecker implements UserCheckerInterface
 {
     public function checkPreAuth(UserInterface $user): void
     {
-        if (!$user instanceof User) {
+        if (!$user instanceof AppUser) {
             return;
         }
 
-        // Global check: If inactive, stop authentication immediately
-        if (method_exists($user, 'isActive') && !$user->isActive()) {
-            throw new CustomUserMessageAuthenticationException(
-                'Your account has been deactivated. Please contact support.'
-            );
+        // This prevents unverified users from probing passwords.
+        if (!$user->IsVerified()) {
+            throw new CustomUserMessageAccountStatusException('Your account is not verified. Please check your email inbox.');
         }
-        if (
-            method_exists($user, 'isVerified')
-            && !$user->isVerified()
-            && method_exists($user, 'getProvider')
-            && $user->getProvider() !== 'google'
-        ) {
-            throw new CustomUserMessageAuthenticationException(
-                'Verified Account is Only Allowed to Login. Make sure to verify your email address before logging in.'
-            );
-        }
-
     }
 
     public function checkPostAuth(UserInterface $user, ?TokenInterface $token = null): void
     {
-        // This runs after the password has been checked. 
-        // You can leave it empty or add additional checks here.
+        // if (!$user instanceof AppUser) {
+        //     return;
+        // }
+
+        // // --- THE LOGIC GOES HERE ---
+
+        // $status = $user->getStatus()->value; // e.g., 'Deactivated', 'Pending', 'Active'
+
+        // if ($status === 'Deactivated') {
+        //     // This message will be shown to the user on the login page
+        //     throw new CustomUserMessageAccountStatusException('Your account has been deactivated. Please contact the administrator.');
+        // }
+
+        // if ($status === 'Pending') {
+        //     throw new CustomUserMessageAccountStatusException('Your account is pending approval.');
+        // }
     }
 }
