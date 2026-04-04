@@ -1,4 +1,4 @@
-# Google OAuth2 Authentication Setup (Symfony + Docker)
+# Google OAuth2 Authentication Guide
 
 This documentation outlines the step-by-step implementation of Google OAuth2 authentication for your app using Symfony and Docker.
 
