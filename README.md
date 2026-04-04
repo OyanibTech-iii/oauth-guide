@@ -4,7 +4,7 @@ This documentation outlines the step-by-step implementation of Google OAuth2 aut
 
 ---
 
-## 🛠️ 1. Installation
+## 1. Installation
 
 Install the required bundles via Composer to handle OAuth2 clients and email verification.
 
@@ -16,7 +16,7 @@ composer require symfonycasts/verify-email-bundle
 
 ---
 
-## 🔐 2. Google Cloud Console Setup
+## 2. Google Cloud Console Setup
 
 Configure your credentials at Google Cloud Console.
 
@@ -33,7 +33,7 @@ CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 
 ---
 
-## 🏗️ 3. Environment Configuration
+## 3. Environment Configuration
 
 ### Database (Docker)
 
@@ -61,7 +61,7 @@ GOOGLE_CLIENT_SECRET=your_client_secret_here
 
 ---
 
-## ⚙️ 4. System Configuration
+## 4. System Configuration
 
 ### Client Registration
 
@@ -97,7 +97,7 @@ security:
 
 ---
 
-## 🛡️ 5. Implementation: User Verification
+## 5. Implementation: User Verification
 
 The `UserChecker.php` handles pre-authentication logic, ensuring only active and verified users can log in.
 
@@ -108,7 +108,7 @@ The `UserChecker.php` handles pre-authentication logic, ensuring only active and
 
 ---
 
-## 🎨 6. Frontend Integration
+## 6. Frontend Integration
 
 Place the following button in your Twig login template:
 
@@ -123,7 +123,7 @@ Place the following button in your Twig login template:
 
 ---
 
-## 🔧 Troubleshooting & Utilities
+## Troubleshooting & Utilities
 
 ### Manual Database Permission Fix
 
