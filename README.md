@@ -1,6 +1,6 @@
 # Google OAuth2 Authentication Setup (Symfony + Docker)
 
-This documentation outlines the step-by-step implementation of Google OAuth2 authentication for the Growfico platform using Symfony and Docker.
+This documentation outlines the step-by-step implementation of Google OAuth2 authentication for your app using Symfony and Docker.
 
 ---
 
