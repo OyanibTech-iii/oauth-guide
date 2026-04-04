@@ -1,26 +1,44 @@
+# Google OAuth2 Authentication Setup (Symfony + Docker)
 
-URI's 
-http://127.0.0.1:8000
-http://127.0.0.1:8000/connect/google/check
+This documentation outlines the step-by-step implementation of Google OAuth2 authentication for the Growfico platform using Symfony and Docker.
+
+---
+
+## 🛠️ 1. Installation
+
+Install the required bundles via Composer to handle OAuth2 clients and email verification.
+
 ```bash
-
------------------------------------------------------------------
 composer require knpuniversity/oauth2-client-bundle
 composer require league/oauth2-google
 composer require symfonycasts/verify-email-bundle
------------------------------------------------------------------
 ```
 
-configure your account on https://console.cloud.google.com/auth/clients
+---
 
-CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
-Client ID
-Client secret
------------------------------------------------------------------
+## 🔐 2. Google Cloud Console Setup
 
-.env line 16
+Configure your credentials at Google Cloud Console.
+
+- **Authorized Redirect URI:**
+```
+http://127.0.0.1:8000/connect/google/check
+```
+
+- **CORS Policy (.env):**
+
 ```bash
+CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+```
 
+---
+
+## 🏗️ 3. Environment Configuration
+
+### Database (Docker)
+
+```bash
+# .env configuration
 MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=Oauth
 MYSQL_USER=googleuser
@@ -34,111 +52,99 @@ PMA_USER=googleuser
 PMA_PASSWORD=googlepass
 ```
 
------------------------------------------------------------------
-```bash
+### Google API Keys
 
+```bash
+GOOGLE_CLIENT_ID=your_client_id_here
+GOOGLE_CLIENT_SECRET=your_client_secret_here
+```
+
+---
+
+## ⚙️ 4. System Configuration
+
+### Client Registration
+
+Configure the OAuth2 client in `config/packages/knpu_oauth2_client.yaml`:
+
+```yaml
 knpu_oauth2_client:
   clients:
     google:
       type: google
       client_id: '%env(GOOGLE_CLIENT_ID)%'
       client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
-      # This 'route' must generate the URI you put in Google Console
+      # This route must generate the URI you put in Google Console
       redirect_route: connect_google_check
       redirect_params: {}
- ```
+```
 
-------------------------------------------------------------------
-security.yaml
-```bash
+---
 
+### Security Layer
+
+Update `config/packages/security.yaml`:
+
+```yaml
+security:
+    firewalls:
+        main:
             custom_authenticators:
-              - App\Security\LoginFormAuthenticator
-              - App\Security\GoogleAuthenticator
+                - App\Security\LoginFormAuthenticator
+                - App\Security\GoogleAuthenticator
             user_checker: App\Security\UserChecker
 ```
 
-------------------------------------------------------------------
-```bash
+---
 
-security/UserChecker.php
-<?php
+## 🛡️ 5. Implementation: User Verification
 
-namespace App\Security;
+The `UserChecker.php` handles pre-authentication logic, ensuring only active and verified users can log in.
 
-use App\Entity\User;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\Security\Core\User\UserCheckerInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+| Condition           | Action                                         |
+|--------------------|-----------------------------------------------|
+| Account Inactive   | Throws Deactivated exception                  |
+| Email Not Verified | Throws exception unless the provider is Google|
 
-class UserChecker implements UserCheckerInterface
-{
-    public function checkPreAuth(UserInterface $user): void
-    {
-        if (!$user instanceof User) {
-            return;
-        }
+---
 
-        // Global check: If inactive, stop authentication immediately
-        if (method_exists($user, 'isActive') && !$user->isActive()) {
-            throw new CustomUserMessageAuthenticationException(
-                'Your account has been deactivated. Please contact support.'
-            );
-        }
-        if (
-            method_exists($user, 'isVerified')
-            && !$user->isVerified()
-            && method_exists($user, 'getProvider')
-            && $user->getProvider() !== 'google'
-        ) {
-            throw new CustomUserMessageAuthenticationException(
-                'Verified Account is Only Allowed to Login. Make sure to verify your email address before logging in.'
-            );
-        }
+## 🎨 6. Frontend Integration
 
-    }
+Place the following button in your Twig login template:
 
-    public function checkPostAuth(UserInterface $user): void
-    {
-        // This runs after the password has been checked. 
-        // You can leave it empty or add additional checks here.
-    }
-}
+```twig
+<div class="auth-wrapper">
+    <a href="{{ path('connect_google_start') }}" id="google-login-link" class="btn-google">
+        <ion-icon name="logo-google" class="icon-left"></ion-icon>
+        Continue with Google
+    </a>
+</div>
 ```
 
-------------------------------------------------------------------
-  templates/login
-  ```bash
+---
 
-  <div class="auth-wrapper">
-        <a href="{{ path('connect_google_start') }}" id="google-login-link" class="btn-google">
-            <ion-icon name="logo-google" class="icon-left"></ion-icon>
-            Continue with Google
-        </a>
-    </div>
-```
+## 🔧 Troubleshooting & Utilities
 
-------------------------------------------------------------------
-mysql/bypass 
+### Manual Database Permission Fix
+
+If the Docker container denies access to `googleuser`, run these commands inside the container:
+
 ```bash
+# 1. Enter the container
+docker exec -it <your_container_name> mysql -u root -p
 
-docker ps
-docker exec -it put_here_your_dockercontainer mysql -u root -p
-
--- Create the user if it doesn't exist for that specific IP range
-CREATE USER IF NOT EXISTS 'googleuser'@'%' IDENTIFIED BY 'your_password_here';
-
--- Grant all privileges on your database
-GRANT ALL PRIVILEGES ON your_database_name.* TO 'googleuser'@'%';
-
--- Refresh the privileges
+# 2. Grant privileges (SQL)
+CREATE USER IF NOT EXISTS 'googleuser'@'%' IDENTIFIED BY 'dbpassword';
+GRANT ALL PRIVILEGES ON Oauth.* TO 'googleuser'@'%';
 FLUSH PRIVILEGES;
 ```
 
-------------------------------------------------------------------
-clear git commit
+---
+
+### Git Maintenance
+
+To undo a commit while keeping your code changes staged:
+
 ```bash
-
 git reset --soft HEAD~1
-
 ```
